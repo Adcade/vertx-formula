@@ -1,0 +1,7 @@
+vertx:
+  lookup:
+    bin_path: /usr/bin/
+    bucket: deploy_adcade
+    install_path: /opt
+    version: 1.3.1
+
