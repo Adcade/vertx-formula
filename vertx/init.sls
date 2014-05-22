@@ -1,8 +1,5 @@
 {% from "vertx/map.jinja" import vertx with context %}
 
-include:
-  - oracle-java
-
 vertx-dependencies:
   pkg.installed:
     - names:
