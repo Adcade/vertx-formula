@@ -27,5 +27,6 @@ install_logstash_encoder:
       - cmd: check_for_logstash_encoder
     - require:
       - module: deploy_vertx
+      - file: vertx_install_path
 
 {% endif %}
