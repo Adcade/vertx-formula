@@ -39,6 +39,7 @@ install_logback:
       - cmd: check_for_logback_access
     - require:
       - module: deploy_vertx
+      - file: vertx_install_path
 
 untar-logback:
   module.wait:
