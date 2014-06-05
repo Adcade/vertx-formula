@@ -1,39 +1,54 @@
 {% from "vertx/map.jinja" import vertx with context %}
+{% from "vertx/defaults.jinja" import config with context %}
 
-vertx-dependencies:
-  pkg.installed:
-    - names:
-      - wget
-      - tar
+{% set version = config('version', 'vertx') %}
+{% set install_path = config('install_path', 'vertx') %}
+{% set s3_bucket = config('s3_bucket', 'vertx') %}
+
+include:
+  - vertx.logging.logstash
+  - vertx.logging.logback
+  - vertx.logging.slf4j
+
+vertx_install_path:
+  file.directory:
+    - name: {{ install_path }}
+    - user: root
+    - group: root
+    - mode: 755
+    - makedirs: true
+    - require_in:
+      - module: untar-vertx
 
 check_vertx:
   cmd.run:
-    - name: echo "Installing Vertx"
-    - unless: "which vertx"
+    - name: "[ $(which vertx) ]; if [ $? == 1 ]; then echo -e '\nchanged=true'; fi"
+    - stateful: True
 
 deploy_vertx:
   module.wait:
     - name: s3.get
-    - bucket: {{ vertx.bucket }}
-    - path: "packages/vertx/vert.x-{{ vertx.version }}.final.tar.gz"
-    - local_file: "/tmp/vert.x-{{ vertx.version }}.final.tar.gz"
+    - bucket: {{ s3_bucket }}
+    - path: "packages/vertx/vert.x-{{ version }}.tar.gz"
+    - local_file: "/tmp/vert.x-{{ version }}.tar.gz"
     - return_bin: True
-    - required_in:
-      - cmd: untar-vertx
     - watch:
       - cmd: check_vertx
 
 untar-vertx:
-  cmd.wait:
-    - name: tar xzvf "/tmp/vert.x-{{ vertx.version }}.final.tar.gz" -C {{ vertx.install_path }}
-    - required_in:
-      - file: vertx-bin
+  module.wait:
+    - name: archive.tar
+    - options: xzvf
+    - tarfile: "/tmp/vert.x-{{ version }}.tar.gz"
+    - cwd: {{ install_path }}
     - watch:
+      - module: deploy_vertx
+    - require:
       - module: deploy_vertx
 
 vertx-bin:
   file.symlink:
-    - name: {{ vertx.bin_path }}vertx
-    - target: {{ vertx.install_path }}/vert.x-{{ vertx.version }}.final/bin/vertx
-    - watch: 
-      - cmd: untar-vertx
+    - name: /usr/bin/vertx
+    - target: {{ install_path }}/vert.x-{{ version }}/bin/vertx
+    - require:
+      - module: untar-vertx

@@ -1,0 +1,39 @@
+{% set vertx = {
+  's3_bucket': 'deploy_adcade',
+  'version': '1.3.1.final',
+  'install_path': '/opt/vertx'
+} %}
+
+{% set slf4j = {
+  'version': '1.7.7',
+  'install': false
+} %}
+
+{% set logback = {
+  'version': '1.1.2',
+  'install': 'True'
+} %}
+
+{% set logstash_encoder = {
+  'version': '2.7',
+  'install': 'True'
+} %}
+
+{%- macro config(key, lookup) -%}
+  {%- if lookup == 'vertx' -%}
+    {%- set pillar_key = 'vertx:' ~ key -%}
+      {{ salt['pillar.get'](pillar_key, vertx.get(key)) }}
+  {%- endif -%}
+  {%- if lookup == 'logback' -%}
+    {%- set pillar_key = 'vertx:logback:' ~ key -%}
+      {{ salt['pillar.get'](pillar_key, logback.get(key)) }}
+  {%- endif -%}
+  {%- if lookup == 'logstash_encoder' -%}
+    {%- set pillar_key = 'vertx:logstash_encoder:' ~ key -%}
+      {{ salt['pillar.get'](pillar_key, logstash_encoder.get(key)) }}
+  {%- endif -%}
+  {%- if lookup == 'slf4j' -%}
+    {%- set pillar_key = 'vertx:slf4j:' ~ key -%}
+      {{ salt['pillar.get'](pillar_key, slf4j.get(key)) }}
+  {%- endif -%}
+{%- endmacro -%}
