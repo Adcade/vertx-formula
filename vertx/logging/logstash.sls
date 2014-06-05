@@ -26,7 +26,7 @@ install_logstash_encoder:
     - watch:
       - cmd: check_for_logstash_encoder
     - require:
-      - module: untar_vertx
+      - module: untar-vertx
       - file: vertx_install_path
 
 {% endif %}
