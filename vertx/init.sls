@@ -21,17 +21,20 @@ vertx_install_path:
       - module: untar-vertx
 
 check_vertx:
-  cmd.run:
-    - name: "[ $(which vertx) ]; if [ $? == 1 ]; then echo -e '\nchanged=true'; fi"
+  cmd.script:
     - stateful: True
+    - template: jinja
+    - source: salt://vertx/files/check_for_vertx.sh
 
 deploy_vertx:
-  module.run:
+  module.wait:
     - name: s3.get
     - bucket: {{ s3_bucket }}
     - path: "packages/vertx/vert.x-{{ version }}.tar.gz"
     - local_file: "/tmp/vert.x-{{ version }}.tar.gz"
     - return_bin: True
+    - watch:
+      - cmd: check_vertx
 
 untar-vertx:
   module.wait:
