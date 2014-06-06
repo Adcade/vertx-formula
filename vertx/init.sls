@@ -26,14 +26,12 @@ check_vertx:
     - stateful: True
 
 deploy_vertx:
-  module.wait:
+  module.run:
     - name: s3.get
     - bucket: {{ s3_bucket }}
     - path: "packages/vertx/vert.x-{{ version }}.tar.gz"
     - local_file: "/tmp/vert.x-{{ version }}.tar.gz"
     - return_bin: True
-    - watch:
-      - cmd: check_vertx
 
 untar-vertx:
   module.wait:
