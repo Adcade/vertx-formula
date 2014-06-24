@@ -44,7 +44,7 @@ install_logback:
 untar-logback:
   module.wait:
     - name: archive.tar
-    - options: xvf
+    - options: xzf
     - tarfile: /tmp/logback-{{ logback_version }}.tar.gz
     - cwd: /tmp
     - watch:

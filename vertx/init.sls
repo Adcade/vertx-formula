@@ -39,7 +39,7 @@ deploy_vertx:
 untar-vertx:
   module.wait:
     - name: archive.tar
-    - options: xzvf
+    - options: xzf
     - tarfile: "/tmp/vert.x-{{ version }}.tar.gz"
     - cwd: {{ install_path }}
     - watch:
